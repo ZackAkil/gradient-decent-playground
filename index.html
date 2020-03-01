@@ -14,7 +14,10 @@
         <h1>Gradient Decent Playground</h1>
         <canvas id="plot" width="200" height="100" style="border:1px solid #c3c3c3;"></canvas>
         <div>
-            <input type="text" value="0" class="dial">
+            <input id="knob1" type="text" value="0" class="dial">
+        </div>
+        <div> 
+            <input id="knob2" type="text" value="0" class="dial">
         </div>
 
         <h3>{{knob1}}</h3>
@@ -23,10 +26,10 @@
     <script>
 
 
-        function draw_line(weight=1){
+        function draw_line(weight = 1, bais = 0) {
 
             const line = function (x) {
-                return (x ** 2 + 4) / weight
+                return ((x ** 2) / weight) + (bais*2)
             }
 
             var canvas = document.getElementById("plot");
@@ -51,10 +54,14 @@
         var app = new Vue({
             el: '#app',
             data: {
-                knob1: 0
-            },watch: {
-                knob1:function(){
-                    draw_line(this.knob1)
+                knob1: 0,
+                knob2: 0
+            }, watch: {
+                knob1: function () {
+                    draw_line(this.knob1, this.knob2)
+                },
+                knob2: function () {
+                    draw_line(this.knob1, this.knob2)
                 }
             },
         })
@@ -63,48 +70,89 @@
         $(document).ready(function () {
             console.log("ready!");
 
- 
 
+            class i_knob {
+                constructor(id, cb) {
+
+                    var v, up = 0, down = 0, i = 0
+
+                    $('#' + id).knob({
+
+                        width: "150",
+                        cursor: true,
+                        thickness: ".5",
+                        fgColor: "#AAAAAA",
+                        bgColor: "#FFFFFF",
+                        displayInput: "false",
+
+                        min: 0
+                        , max: 20
+                        , stopper: false
+                        , change: function () {
+                            if (v > this.cv) {
+                                if (up) {
+                                    // decr();
+                                    i--
+                                    up = 0;
+                                } else { up = 1; down = 0; }
+                            } else {
+                                if (v < this.cv) {
+                                    if (down) {
+                                        // incr();
+                                        i++
+                                        down = 0;
+                                    } else { down = 1; up = 0; }
+                                }
+                            }
+                            v = this.cv;
+                            cb(i)
+                            // app.knob1 = i
+                        }
+                    });
+                }
+            }
 
 
 
             $(function () {
 
+                var knob1 = new i_knob('knob1', function (v) { app.knob1 = v })
+                var knob2 = new i_knob('knob2', function (v) { app.knob2 = v })
 
-                var v, up = 0, down = 0, i = 0
+                // var v, up = 0, down = 0, i = 0
 
-                $(".dial").knob({
+                // $(".dial").knob({
 
-                    width: "150",
-                    cursor: true,
-                    thickness: ".5",
-                    fgColor: "#AAAAAA",
-                    bgColor: "#FFFFFF",
-                    displayInput: "false",
+                //     width: "150",
+                //     cursor: true,
+                //     thickness: ".5",
+                //     fgColor: "#AAAAAA",
+                //     bgColor: "#FFFFFF",
+                //     displayInput: "false",
 
-                    min: 0
-                    , max: 20
-                    , stopper: false
-                    , change: function () {
-                        if (v > this.cv) {
-                            if (up) {
-                                // decr();
-                                i--
-                                up = 0;
-                            } else { up = 1; down = 0; }
-                        } else {
-                            if (v < this.cv) {
-                                if (down) {
-                                    // incr();
-                                    i++
-                                    down = 0;
-                                } else { down = 1; up = 0; }
-                            }
-                        }
-                        v = this.cv;
-                        app.knob1 = i
-                    }
-                });
+                //     min: 0
+                //     , max: 20
+                //     , stopper: false
+                //     , change: function () {
+                //         if (v > this.cv) {
+                //             if (up) {
+                //                 // decr();
+                //                 i--
+                //                 up = 0;
+                //             } else { up = 1; down = 0; }
+                //         } else {
+                //             if (v < this.cv) {
+                //                 if (down) {
+                //                     // incr();
+                //                     i++
+                //                     down = 0;
+                //                 } else { down = 1; up = 0; }
+                //             }
+                //         }
+                //         v = this.cv;
+                //         app.knob1 = i
+                //     }
+                // });
             });
         });
 
