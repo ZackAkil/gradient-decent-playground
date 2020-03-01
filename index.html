@@ -1,0 +1,115 @@
+<html>
+<header>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css"
+        integrity="sha256-ECB9bbROLGm8wOoEbHcHRxlHgzGqYpDtNTgDTyDz0wg=" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-Knob/1.2.13/jquery.knob.min.js"
+        integrity="sha256-2144q+NOM/XU6ZxSqRTJ8P0W/CkY6zXc6mXYt4+mF9s=" crossorigin="anonymous"></script>
+</header>
+
+<body>
+    <div id="app">
+        <h1>Gradient Decent Playground</h1>
+        <canvas id="plot" width="200" height="100" style="border:1px solid #c3c3c3;"></canvas>
+        <div>
+            <input type="text" value="0" class="dial">
+        </div>
+
+        <h3>{{knob1}}</h3>
+    </div>
+
+    <script>
+
+
+        function draw_line(weight=1){
+
+            const line = function (x) {
+                return (x ** 2 + 4) / weight
+            }
+
+            var canvas = document.getElementById("plot");
+            var ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "#FF0000";
+            // ctx.fillRect(0, 0, 150, 75);
+
+            ctx.beginPath()
+            ctx.moveTo(0, 100 - line(0))
+            for (let index = 0; index < 200; index++) {
+                // const element = array[index];
+                ctx.lineTo(index, 100 - line(index))
+            }
+            ctx.stroke()
+        }
+
+
+
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                knob1: 0
+            },watch: {
+                knob1:function(){
+                    draw_line(this.knob1)
+                }
+            },
+        })
+
+
+        $(document).ready(function () {
+            console.log("ready!");
+
+ 
+
+
+
+
+            $(function () {
+
+
+                var v, up = 0, down = 0, i = 0
+
+                $(".dial").knob({
+
+                    width: "150",
+                    cursor: true,
+                    thickness: ".5",
+                    fgColor: "#AAAAAA",
+                    bgColor: "#FFFFFF",
+                    displayInput: "false",
+
+                    min: 0
+                    , max: 20
+                    , stopper: false
+                    , change: function () {
+                        if (v > this.cv) {
+                            if (up) {
+                                // decr();
+                                i--
+                                up = 0;
+                            } else { up = 1; down = 0; }
+                        } else {
+                            if (v < this.cv) {
+                                if (down) {
+                                    // incr();
+                                    i++
+                                    down = 0;
+                                } else { down = 1; up = 0; }
+                            }
+                        }
+                        v = this.cv;
+                        app.knob1 = i
+                    }
+                });
+            });
+        });
+
+
+    </script>
+</body>
+
+</html>
